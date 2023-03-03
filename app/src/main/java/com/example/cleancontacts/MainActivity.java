@@ -7,6 +7,7 @@ import static com.example.cleancontacts.ContactManager.setContentResolver;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -67,12 +68,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadContacts() {
         stringContacts.clear();
-
         setContentResolver(getContentResolver());
         getStringContacts(getContactList());
-
-        new Contact("id", "name", null, null);
-
         // создаем адаптер
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stringContacts);
         ListView contactList = findViewById(R.id.contactList);
@@ -84,13 +81,16 @@ public class MainActivity extends AppCompatActivity {
         Contact prev = contacts.get(0);
         for (int i = 1; i < contacts.size(); i++) {
             Contact next = contacts.get(i);
-            String element = next.toString();
+            String contact = next.toString();
             if (compareNames(prev.getName(), next.getName())) {
-                element += "\n\nDELETE";
+                contact += "\n\nDELETE";
             }
             prev = next;
-            stringContacts.add(element);
+            stringContacts.add(contact);
         }
     }
 
+    public void onFind(View view) {
+        // Do something in response to button click
+    }
 }

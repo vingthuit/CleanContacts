@@ -26,31 +26,29 @@ public class ContactManager {
         ArrayList<Contact> contacts = new ArrayList<>();
         try (Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, null)) {
-            if (cursor != null) {
-                while (cursor.moveToNext()) {
-                    // получаем каждый контакт
-                    String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-                    String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                    if (name == null) {
-                        name = "empty";
-                    }
-                    List<ContactDetail> phones = new ArrayList<>();
-                    if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
-                        phones = getNums(id);
-                    }
-                    List<ContactDetail> addresses = getAddresses(id);
-                    contacts.add(new Contact(id, name, phones, addresses));
+            while (cursor.moveToNext()) {
+                // получаем каждый контакт
+                String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+                String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                if (name == null) {
+                    name = "empty";
                 }
-                contacts.sort(new ContactComparator());
+                List<ContactDetail> phones = new ArrayList<>();
+                if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
+                    getPhones(id, phones);
+                }
+                List<ContactDetail> addresses = getAddresses(id);
+                contacts.add(new Contact(id, name, phones, addresses));
             }
+            contacts.sort(new ContactComparator());
         }
         return contacts;
     }
 
-    static boolean compareNames(String a, String b) {
-        a = remove(a);
-        b = remove(b);
-        return a.equals(b) || a.contains(b) || b.contains(a);
+    static boolean compareNames(String first, String second) {
+        first = remove(first);
+        second = remove(second);
+        return first.equals(second) || first.contains(second) || second.contains(first);
     }
 
     static String remove(String name) {
@@ -68,52 +66,34 @@ public class ContactManager {
             @SuppressLint("Range") String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
             Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
 
-            insertPhone(uri);
             //contentResolver.delete(uri, null, null);
         } catch (Exception e) {
             System.out.println(Arrays.toString(e.getStackTrace()));
         }
     }
 
-    private void insertPhone(Uri uri) {
-        ArrayList<ContentProviderOperation> op = new ArrayList<>();
-        op.add(ContentProviderOperation.newInsert(uri)
-                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, "99999")
-                .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
-                .build());
-        try {
-            contentResolver.applyBatch(ContactsContract.AUTHORITY, op);
-        } catch (Exception e) {
-            Log.e("Exception: ", e.getMessage());
-        }
-    }
-
     @SuppressLint("Range")
-    private static List<ContactDetail> getNums(String id) {
-        List<ContactDetail> phones = new ArrayList<>();
-        try (Cursor pCur = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+    private static void getPhones(String id, List<ContactDetail> phones) {
+        try (Cursor cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null)) {
-            while (pCur.moveToNext()) {
-                int phoneType = pCur.getInt(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
-                String phone = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            while (cursor.moveToNext()) {
+                int phoneType = cursor.getInt(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
+                String phone = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                 phones.add(new ContactDetail(phoneType, getFormattedPhone(phone)));
             }
         }
-        return phones;
     }
 
     @SuppressLint("Range")
     private static List<ContactDetail> getAddresses(String id) {
         List<ContactDetail> addresses = new ArrayList<>();
-        try (Cursor postals = contentResolver.query(
+        try (Cursor cursor = contentResolver.query(
                 ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI, null,
                 ContactsContract.CommonDataKinds.StructuredPostal.CONTACT_ID + " = "
                         + id, null, null)) {
-            while (postals.moveToNext()) {
-                int type = postals.getInt(postals.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.TYPE));
-                String address = postals.getString(postals.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS));
+            while (cursor.moveToNext()) {
+                int type = cursor.getInt(cursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.TYPE));
+                String address = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS));
                 addresses.add(new ContactDetail(type, address));
             }
         }

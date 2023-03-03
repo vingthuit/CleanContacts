@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">CleanContacts</string>
-    <string name="Contacts">Контакты</string>
+    <string name="contacts">Contacts</string>
+    <string name="button">Find</string>
 </resources>
