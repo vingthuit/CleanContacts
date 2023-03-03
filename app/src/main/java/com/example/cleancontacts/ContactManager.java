@@ -21,6 +21,7 @@ public class ContactManager {
         ContactManager.contentResolver = contentResolver;
     }
 
+    @SuppressLint("Range")
     static ArrayList<Contact> getContactList() {
         ArrayList<Contact> contacts = new ArrayList<>();
         try (Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
@@ -28,14 +29,17 @@ public class ContactManager {
             if (cursor != null) {
                 while (cursor.moveToNext()) {
                     // получаем каждый контакт
-                    @SuppressLint("Range") String name = cursor.getString(cursor
-                            .getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                    List<ContactDetail> phones = getNums(cursor);
-
-                   /* if (name.equals("Ксюня")) {
-                        getAddress(cursor);
-                    }*/
-                    contacts.add(new Contact(name, phones, null));
+                    String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+                    String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                    if (name == null) {
+                        name = "empty";
+                    }
+                    List<ContactDetail> phones = new ArrayList<>();
+                    if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
+                        phones = getNums(id);
+                    }
+                    List<ContactDetail> addresses = getAddresses(id);
+                    contacts.add(new Contact(id, name, phones, addresses));
                 }
                 contacts.sort(new ContactComparator());
             }
@@ -43,10 +47,10 @@ public class ContactManager {
         return contacts;
     }
 
-    static boolean compareNames(Contact a, Contact b) {
-        String aName = remove(a.getName());
-        String bName = remove(b.getName());
-        return aName.equals(bName) || aName.contains(bName) || bName.contains(aName);
+    static boolean compareNames(String a, String b) {
+        a = remove(a);
+        b = remove(b);
+        return a.equals(b) || a.contains(b) || b.contains(a);
     }
 
     static String remove(String name) {
@@ -87,36 +91,33 @@ public class ContactManager {
     }
 
     @SuppressLint("Range")
-    private static List<ContactDetail> getNums(Cursor cursor) {
+    private static List<ContactDetail> getNums(String id) {
         List<ContactDetail> phones = new ArrayList<>();
-        String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-        if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
-            try (Cursor pCur = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null)) {
-                while (pCur.moveToNext()) {
-                    int phoneType = pCur.getInt(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
-                    String phone = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    phones.add(new ContactDetail(phoneType, getFormattedPhone(phone)));
-                }
+        try (Cursor pCur = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null)) {
+            while (pCur.moveToNext()) {
+                int phoneType = pCur.getInt(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
+                String phone = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                phones.add(new ContactDetail(phoneType, getFormattedPhone(phone)));
             }
         }
         return phones;
     }
 
     @SuppressLint("Range")
-    private void getAddress(Cursor cursor) {
-        String contactId = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+    private static List<ContactDetail> getAddresses(String id) {
+        List<ContactDetail> addresses = new ArrayList<>();
         try (Cursor postals = contentResolver.query(
                 ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI, null,
                 ContactsContract.CommonDataKinds.StructuredPostal.CONTACT_ID + " = "
-                        + contactId, null, null)) {
+                        + id, null, null)) {
             while (postals.moveToNext()) {
                 int type = postals.getInt(postals.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.TYPE));
                 String address = postals.getString(postals.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS));
-                System.out.println();
+                addresses.add(new ContactDetail(type, address));
             }
         }
-
+        return addresses;
     }
 
     private static String getFormattedPhone(String phone) {

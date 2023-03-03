@@ -1,26 +1,21 @@
 package com.example.cleancontacts;
 
-import java.util.ArrayList;
+import androidx.annotation.NonNull;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
 public class Contact {
-    private String name = "a";
-    private List<ContactDetail> phones = new ArrayList<>();
-    private List<ContactDetail> addresses = new ArrayList<>();
+    private String id;
+    private String name;
+    private List<ContactDetail> phones;
+    private List<ContactDetail> addresses;
 
-    public Contact(String name, List<ContactDetail> phones, List<ContactDetail> addresses) {
+    public Contact(String id, String name, List<ContactDetail> phones, List<ContactDetail> addresses) {
+        this.id = id;
         this.name = name;
         this.phones = phones;
-        this.addresses = addresses;
-    }
-
-    public List<ContactDetail> getAddresses() {
-        return addresses;
-    }
-
-    public void setAddresses(List<ContactDetail> addresses) {
         this.addresses = addresses;
     }
 
@@ -42,16 +37,17 @@ public class Contact {
         this.phones = phones;
     }
 
+    public List<ContactDetail> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<ContactDetail> addresses) {
+        this.addresses = addresses;
+    }
+
+    @NonNull
     @Override
     public String toString() {
-        if (phones == null) {
-            phones = new ArrayList<>();
-        }
-        if (addresses == null) {
-            addresses = new ArrayList<>();
-        }
-
-
         StringBuilder sb = new StringBuilder(name);
         for (int i = 0; i < phones.size(); i++) {
             sb.append('\n').append(phones.get(i).getDetail());
@@ -79,14 +75,6 @@ public class Contact {
 class ContactComparator implements Comparator<Contact> {
     @Override
     public int compare(Contact a, Contact b) {
-        if (a.getName() == null) {
-            a.setName("a");
-        }
-        if (b.getName() == null) {
-            b.setName("b");
-        }
-
-
         return a.getName().compareToIgnoreCase(b.getName());
     }
 }
