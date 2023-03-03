@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CleanContacts</string>
+    <string name="Contacts">Контакты</string>
 </resources>

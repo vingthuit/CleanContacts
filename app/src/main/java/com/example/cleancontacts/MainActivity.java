@@ -9,10 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
-import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -34,16 +31,13 @@ public class MainActivity extends AppCompatActivity {
     private static boolean READ_CONTACTS_GRANTED = false;
 
     ArrayList<String> stringContacts = new ArrayList<>();
-    Button addBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        addBtn = findViewById(R.id.addBtn);
         getContactsWithPermission();
-        addBtn.setEnabled(READ_CONTACTS_GRANTED);
     }
 
     private void getContactsWithPermission() {
@@ -70,22 +64,12 @@ public class MainActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 READ_CONTACTS_GRANTED = true;
             }
-            addBtn.setEnabled(READ_CONTACTS_GRANTED);
         }
         if (READ_CONTACTS_GRANTED) {
             loadContacts();
         } else {
             Toast.makeText(this, "Требуется установить разрешения", Toast.LENGTH_LONG).show();
         }
-    }
-
-    public void onAddContact(View v) {
-        EditText contactText = findViewById(R.id.newContact);
-        String newContact = contactText.getText().toString();
-        contactText.setText("");
-
-        //insertContact(newContact);
-        loadContacts();
     }
 
     private void loadContacts() {
