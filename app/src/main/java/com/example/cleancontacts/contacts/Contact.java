@@ -1,4 +1,4 @@
-package com.example.cleancontacts;
+package com.example.cleancontacts.contacts;
 
 import androidx.annotation.NonNull;
 

@@ -1,4 +1,4 @@
-package com.example.cleancontacts;
+package com.example.cleancontacts.contacts;
 
 import android.annotation.SuppressLint;
 import android.content.ContentProviderOperation;
@@ -17,12 +17,12 @@ import java.util.Set;
 public class ContactManager {
     private static ContentResolver contentResolver;
 
-    static void setContentResolver(ContentResolver contentResolver) {
+    public static void setContentResolver(ContentResolver contentResolver) {
         ContactManager.contentResolver = contentResolver;
     }
 
     @SuppressLint("Range")
-    static ArrayList<Contact> getContactList() {
+    public static ArrayList<Contact> getContactList() {
         ArrayList<Contact> contacts = new ArrayList<>();
         try (Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, null)) {
@@ -45,13 +45,13 @@ public class ContactManager {
         return contacts;
     }
 
-    static boolean compareNames(String first, String second) {
+    public static boolean compareNames(String first, String second) {
         first = remove(first);
         second = remove(second);
         return first.equals(second) || first.contains(second) || second.contains(first);
     }
 
-    static String remove(String name) {
+    public static String remove(String name) {
         int startIndex = name.indexOf("/");
         if (startIndex == -1) {
             return name;

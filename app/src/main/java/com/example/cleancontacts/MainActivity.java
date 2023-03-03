@@ -1,14 +1,15 @@
 package com.example.cleancontacts;
 
-import static com.example.cleancontacts.ContactManager.compareNames;
-import static com.example.cleancontacts.ContactManager.getContactList;
-import static com.example.cleancontacts.ContactManager.setContentResolver;
+import static com.example.cleancontacts.contacts.ContactManager.compareNames;
+import static com.example.cleancontacts.contacts.ContactManager.getContactList;
+import static com.example.cleancontacts.contacts.ContactManager.setContentResolver;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -16,6 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import com.example.cleancontacts.contacts.Contact;
 
 import java.util.ArrayList;
 
@@ -25,13 +28,15 @@ public class MainActivity extends AppCompatActivity {
     private static boolean READ_CONTACTS_GRANTED = false;
 
     ArrayList<String> stringContacts = new ArrayList<>();
+    Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         getContactsWithPermission();
+
+        button = findViewById(R.id.button);
     }
 
     private void getContactsWithPermission() {
@@ -90,7 +95,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onFind(View view) {
-        // Do something in response to button click
+    public void onFind(View view){
+        if (view.getId() == R.id.button) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new FirstFragment()).commit();
+            button.setVisibility(View.GONE);
+        }
     }
 }
