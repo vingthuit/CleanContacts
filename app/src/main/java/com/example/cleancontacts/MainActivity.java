@@ -5,6 +5,7 @@ import static com.example.cleancontacts.contacts.ContactManager.getContactList;
 import static com.example.cleancontacts.contacts.ContactManager.setContentResolver;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
@@ -96,6 +97,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onFind(View view){
-
+        Bundle bundle = new Bundle();
+        stringContacts.remove(0);
+        bundle.putStringArrayList("list", stringContacts);
+        Intent intent = new Intent(MainActivity.this, FindSame.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 }
