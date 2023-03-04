@@ -96,9 +96,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onFind(View view){
-        if (view.getId() == R.id.button) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new FirstFragment()).commit();
-            button.setVisibility(View.GONE);
-        }
+
     }
 }
