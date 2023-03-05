@@ -4,6 +4,7 @@ import static com.example.cleancontacts.contacts.ContactManager.getContactList;
 import static com.example.cleancontacts.contacts.ContactManager.setContactList;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -28,15 +29,16 @@ public class MainActivity extends AppCompatActivity {
     private static boolean READ_CONTACTS_GRANTED = false;
 
     ArrayList<String> stringContacts = new ArrayList<>();
-    Button button;
+    //Button button;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getContactsWithPermission();
 
-        button = findViewById(R.id.button);
+        //button = findViewById(R.id.findButton);
     }
 
     private void getContactsWithPermission() {

@@ -2,24 +2,38 @@ package com.example.cleancontacts.contacts;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
 public class Contact {
-    private String id;
+    private String lookupKey;
     private String name;
     private List<ContactDetail> phones;
     private List<ContactDetail> addresses;
 
-    public Contact(String id, String name, List<ContactDetail> phones, List<ContactDetail> addresses) {
-        this.id = id;
+    public Contact(String lookupKey, String name, List<ContactDetail> phones, List<ContactDetail> addresses) {
+        this.lookupKey = lookupKey;
         this.name = name;
         this.phones = phones;
         this.addresses = addresses;
     }
 
-    public Contact() { }
+    public Contact() {
+        this.lookupKey = "-1";
+        this.name = "emptyContact";
+        this.phones = new ArrayList<>();
+        this.addresses = new ArrayList<>();
+    }
+
+    public String getLookupKey() {
+        return lookupKey;
+    }
+
+    public void setLookupKey(String lookupKey) {
+        this.lookupKey = lookupKey;
+    }
 
     public String getName() {
         return name;

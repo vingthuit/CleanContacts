@@ -6,11 +6,11 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/findButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onFind"
-        android:text="@string/button"
+        android:text="@string/findButton"
         app:layout_constraintBottom_toTopOf="@id/header"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -24,7 +24,7 @@
         app:layout_constraintBottom_toTopOf="@id/contactList"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/button" />
+        app:layout_constraintTop_toTopOf="@id/findButton" />
 
     <ListView
         android:id="@+id/contactList"

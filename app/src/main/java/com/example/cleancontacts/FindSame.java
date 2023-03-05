@@ -1,12 +1,11 @@
 package com.example.cleancontacts;
 
-import static com.example.cleancontacts.contacts.ContactManager.compareNames;
+import static com.example.cleancontacts.contacts.ContactManager.areSameNames;
+import static com.example.cleancontacts.contacts.ContactManager.deleteContact;
 import static com.example.cleancontacts.contacts.ContactManager.getContactList;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -31,33 +30,47 @@ public class FindSame extends AppCompatActivity {
         contactList = findViewById(R.id.contactList);
         stringContacts = new ArrayList<>();
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stringContacts);
-        drawContacts();
-    }
-
-    private void drawContacts() {
-        adapter.clear();
-        stringContacts.clear();
         getStringContacts();
-        adapter.addAll(stringContacts);
         contactList.setAdapter(adapter);
     }
 
-    public void onFind(View view) {
-        contacts.remove(0);
-        drawContacts();
+    public void onDelete(View view) {
+        adapter.clear();
+        stringContacts.clear();
+        String id = getStringContacts();
+        if (id.equals("-1")) {
+            stringContacts.clear();
+        } else {
+            deleteContact(id);
+            contacts.removeIf(c -> c.getLookupKey().equals(id));
+        }
+        contactList.setAdapter(adapter);
     }
 
-    private void getStringContacts() {
-        Contact prev = contacts.get(0);
-        stringContacts.add(prev.toString());
-        for (int i = 1; i < contacts.size(); i++) {
+    private String getStringContacts() {
+        Contact prev = new Contact();
+        for (int i = 0; i < contacts.size(); i++) {
             Contact next = contacts.get(i);
-            String contact = next.toString();
-            if (compareNames(prev.getName(), next.getName())) {
-                contact += "\n\nDELETE";
+            if (areSameNames(prev.getName(), next.getName())) {
+                stringContacts.add(prev.toString());
+                stringContacts.add(next.toString());
+                return next.getLookupKey();
             }
             prev = next;
-            stringContacts.add(contact);
         }
+        return "-1";
     }
+
+    public void onNext(View view) {
+        adapter.clear();
+        stringContacts.clear();
+        String id = getStringContacts();
+        if (id.equals("-1")) {
+            stringContacts.clear();
+        } else {
+            contacts.removeIf(c -> c.getLookupKey().equals(id));
+        }
+        contactList.setAdapter(adapter);
+    }
+
 }

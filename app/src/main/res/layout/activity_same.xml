@@ -6,12 +6,23 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/deleteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onFind"
-        android:text="@string/button"
+        android:onClick="onDelete"
+        android:text="@string/deleteButton"
         app:layout_constraintBottom_toTopOf="@id/header"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/nextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onNext"
+        android:text="@string/nextButton"
+        app:layout_constraintBottom_toTopOf="@id/header"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -19,12 +30,12 @@
         android:id="@+id/header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/button"
+        android:text="@string/deleteButton"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@id/contactList"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/button" />
+        app:layout_constraintTop_toTopOf="@id/deleteButton" />
 
     <ListView
         android:id="@+id/contactList"

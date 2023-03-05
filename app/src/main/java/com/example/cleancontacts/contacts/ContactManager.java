@@ -31,6 +31,7 @@ public class ContactManager {
             while (cursor.moveToNext()) {
                 // получаем каждый контакт
                 String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+                String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
                 String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 if (name == null) {
                     name = "empty";
@@ -40,13 +41,13 @@ public class ContactManager {
                     getPhones(id, phones);
                 }
                 List<ContactDetail> addresses = getAddresses(id);
-                contacts.add(new Contact(id, name, phones, addresses));
+                contacts.add(new Contact(lookupKey, name, phones, addresses));
             }
             contacts.sort(new ContactComparator());
         }
     }
 
-    public static boolean compareNames(String first, String second) {
+    public static boolean areSameNames(String first, String second) {
         first = remove(first);
         second = remove(second);
         return first.equals(second) || first.contains(second) || second.contains(first);
@@ -61,15 +62,13 @@ public class ContactManager {
         return name.replace(toBeReplaced, "");
     }
 
-    private void deleteContact(Cursor cursor) {
+    public static void deleteContact(String lookupKey) {
         try {
             //make field lookupKey or uri in Contact
-            @SuppressLint("Range") String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
             Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
-
-            //contentResolver.delete(uri, null, null);
+            contentResolver.delete(uri, null, null);
         } catch (Exception e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
+            e.printStackTrace();
         }
     }
 

@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">CleanContacts</string>
     <string name="contacts">Contacts</string>
-    <string name="button">Find</string>
+    <string name="findButton">Find</string>
+    <string name="deleteButton">Delete</string>
     <string name="update">Update</string>
     <string name="hello">Hello from Fragment</string>
+    <string name="nextButton">Next</string>
 </resources>
