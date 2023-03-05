@@ -16,14 +16,16 @@ import java.util.Set;
 
 public class ContactManager {
     private static ContentResolver contentResolver;
+    private static ArrayList<Contact> contacts;
 
-    public static void setContentResolver(ContentResolver contentResolver) {
-        ContactManager.contentResolver = contentResolver;
+    public static ArrayList<Contact> getContactList() {
+        return contacts;
     }
 
     @SuppressLint("Range")
-    public static ArrayList<Contact> getContactList() {
-        ArrayList<Contact> contacts = new ArrayList<>();
+    public static void setContactList(ContentResolver contentResolver) {
+        ContactManager.contentResolver = contentResolver;
+        contacts = new ArrayList<>();
         try (Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, null)) {
             while (cursor.moveToNext()) {
@@ -42,7 +44,6 @@ public class ContactManager {
             }
             contacts.sort(new ContactComparator());
         }
-        return contacts;
     }
 
     public static boolean compareNames(String first, String second) {

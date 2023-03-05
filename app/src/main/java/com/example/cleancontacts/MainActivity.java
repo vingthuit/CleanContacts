@@ -1,8 +1,7 @@
 package com.example.cleancontacts;
 
-import static com.example.cleancontacts.contacts.ContactManager.compareNames;
 import static com.example.cleancontacts.contacts.ContactManager.getContactList;
-import static com.example.cleancontacts.contacts.ContactManager.setContentResolver;
+import static com.example.cleancontacts.contacts.ContactManager.setContactList;
 
 import android.Manifest;
 import android.content.Intent;
@@ -74,8 +73,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadContacts() {
         stringContacts.clear();
-        setContentResolver(getContentResolver());
-        getStringContacts(getContactList());
+        setContactList(getContentResolver());
+        ArrayList<Contact> contacts = getContactList();
+        contacts.forEach(c -> stringContacts.add(c.toString()));
         // создаем адаптер
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stringContacts);
         ListView contactList = findViewById(R.id.contactList);
@@ -83,25 +83,8 @@ public class MainActivity extends AppCompatActivity {
         contactList.setAdapter(adapter);
     }
 
-    private void getStringContacts(ArrayList<Contact> contacts) {
-        Contact prev = contacts.get(0);
-        for (int i = 1; i < contacts.size(); i++) {
-            Contact next = contacts.get(i);
-            String contact = next.toString();
-            if (compareNames(prev.getName(), next.getName())) {
-                contact += "\n\nDELETE";
-            }
-            prev = next;
-            stringContacts.add(contact);
-        }
-    }
-
     public void onFind(View view){
-        Bundle bundle = new Bundle();
-        stringContacts.remove(0);
-        bundle.putStringArrayList("list", stringContacts);
         Intent intent = new Intent(MainActivity.this, FindSame.class);
-        intent.putExtras(bundle);
         startActivity(intent);
     }
 }
