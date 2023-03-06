@@ -37,12 +37,12 @@ public class FindSame extends AppCompatActivity {
     public void onDelete(View view) {
         adapter.clear();
         stringContacts.clear();
-        String id = getStringContacts();
-        if (id.equals("-1")) {
+        String lookupKey = getStringContacts();
+        if (lookupKey.equals("-1")) {
             stringContacts.clear();
         } else {
-            deleteContact(id);
-            contacts.removeIf(c -> c.getLookupKey().equals(id));
+            deleteContact(lookupKey);
+            contacts.removeIf(c -> c.getLookupKey().equals(lookupKey));
         }
         contactList.setAdapter(adapter);
     }
@@ -64,11 +64,11 @@ public class FindSame extends AppCompatActivity {
     public void onNext(View view) {
         adapter.clear();
         stringContacts.clear();
-        String id = getStringContacts();
-        if (id.equals("-1")) {
+        String lookupKey = getStringContacts();
+        if (lookupKey.equals("-1")) {
             stringContacts.clear();
         } else {
-            contacts.removeIf(c -> c.getLookupKey().equals(id));
+            contacts.removeIf(c -> c.getLookupKey().equals(lookupKey));
         }
         contactList.setAdapter(adapter);
     }
