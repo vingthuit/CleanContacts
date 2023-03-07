@@ -27,7 +27,7 @@ public class FindSame extends AppCompatActivity {
         setContentView(R.layout.activity_same);
 
         contacts = getContactList();
-        contactList = findViewById(R.id.contactList);
+        contactList = findViewById(R.id.contact_list);
         stringContacts = new ArrayList<>();
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stringContacts);
         getStringContacts();

@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -29,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     private static boolean READ_CONTACTS_GRANTED = false;
 
     ArrayList<String> stringContacts = new ArrayList<>();
-    //Button button;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -37,8 +35,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getContactsWithPermission();
-
-        //button = findViewById(R.id.findButton);
     }
 
     private void getContactsWithPermission() {
@@ -80,12 +76,12 @@ public class MainActivity extends AppCompatActivity {
         contacts.forEach(c -> stringContacts.add(c.toString()));
         // создаем адаптер
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stringContacts);
-        ListView contactList = findViewById(R.id.contactList);
+        ListView contactList = findViewById(R.id.contact_list);
         // устанавливаем для списка адаптер
         contactList.setAdapter(adapter);
     }
 
-    public void onFind(View view){
+    public void onFind(View view) {
         Intent intent = new Intent(MainActivity.this, FindSame.class);
         startActivity(intent);
     }
