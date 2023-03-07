@@ -20,6 +20,7 @@ public class FindSame extends AppCompatActivity {
     private ArrayList<String> stringContacts;
     private ArrayAdapter<String> adapter;
     private ListView contactList;
+    private Contact contact;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,47 +31,36 @@ public class FindSame extends AppCompatActivity {
         contactList = findViewById(R.id.contact_list);
         stringContacts = new ArrayList<>();
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stringContacts);
+
         getStringContacts();
         contactList.setAdapter(adapter);
     }
 
     public void onDelete(View view) {
-        adapter.clear();
-        stringContacts.clear();
-        String lookupKey = getStringContacts();
-        if (lookupKey.equals("-1")) {
-            stringContacts.clear();
-        } else {
-            deleteContact(lookupKey);
-            contacts.removeIf(c -> c.getLookupKey().equals(lookupKey));
-        }
-        contactList.setAdapter(adapter);
+        deleteContact(contact.getLookupKey());
+        onNext(view);
     }
 
-    private String getStringContacts() {
+    private void getStringContacts() {
         Contact prev = new Contact();
         for (int i = 0; i < contacts.size(); i++) {
             Contact next = contacts.get(i);
             if (areSameNames(prev.getName(), next.getName())) {
                 stringContacts.add(prev.toString());
                 stringContacts.add(next.toString());
-                return next.getLookupKey();
+                contact = next;
+                return;
             }
             prev = next;
         }
-        return "-1";
     }
 
     public void onNext(View view) {
         adapter.clear();
         stringContacts.clear();
-        String lookupKey = getStringContacts();
-        if (lookupKey.equals("-1")) {
-            stringContacts.clear();
-        } else {
-            contacts.removeIf(c -> c.getLookupKey().equals(lookupKey));
-        }
+        contacts.remove(contact);
+
+        getStringContacts();
         contactList.setAdapter(adapter);
     }
-
 }

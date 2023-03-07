@@ -64,7 +64,6 @@ public class ContactManager {
 
     public static void deleteContact(String lookupKey) {
         try {
-            //make field lookupKey or uri in Contact
             Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
             contentResolver.delete(uri, null, null);
         } catch (Exception e) {
