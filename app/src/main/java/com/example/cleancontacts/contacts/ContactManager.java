@@ -17,7 +17,6 @@ import java.util.Set;
 public class ContactManager {
     private static ContentResolver contentResolver;
     private static ArrayList<Contact> contacts;
-
     public static ArrayList<Contact> getContactList() {
         return contacts;
     }
@@ -36,12 +35,14 @@ public class ContactManager {
                 if (name == null) {
                     name = "empty";
                 }
+                String account = cursor.getString(cursor.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_NAME));
+
                 List<ContactDetail> phones = new ArrayList<>();
                 if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
                     getPhones(id, phones);
                 }
                 List<ContactDetail> addresses = getAddresses(id);
-                contacts.add(new Contact(lookupKey, name, phones, addresses));
+                contacts.add(new Contact(lookupKey, name, account, phones, addresses));
             }
             contacts.sort(new ContactComparator());
         }

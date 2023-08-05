@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         stringContacts.clear();
         setContactList(getContentResolver());
         ArrayList<Contact> contacts = getContactList();
+
         contacts.forEach(c -> stringContacts.add(c.toString()));
         // создаем адаптер
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stringContacts);

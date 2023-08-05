@@ -10,12 +10,14 @@ import java.util.Objects;
 public class Contact {
     private String lookupKey;
     private String name;
+    private String account;
     private List<ContactDetail> phones;
     private List<ContactDetail> addresses;
 
-    public Contact(String lookupKey, String name, List<ContactDetail> phones, List<ContactDetail> addresses) {
+    public Contact(String lookupKey, String name,  String account, List<ContactDetail> phones, List<ContactDetail> addresses) {
         this.lookupKey = lookupKey;
         this.name = name;
+        this.account = account;
         this.phones = phones;
         this.addresses = addresses;
     }
@@ -23,6 +25,7 @@ public class Contact {
     public Contact() {
         this.lookupKey = "-1";
         this.name = "emptyContact";
+        this.account = "null";
         this.phones = new ArrayList<>();
         this.addresses = new ArrayList<>();
     }
@@ -41,6 +44,14 @@ public class Contact {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
     }
 
     public List<ContactDetail> getPhones() {
@@ -63,11 +74,12 @@ public class Contact {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(name);
+        sb.append("\naccount: ").append(account);
         for (int i = 0; i < phones.size(); i++) {
-            sb.append('\n').append(phones.get(i).getDetail());
+            sb.append("\nphone: ").append(phones.get(i).getDetail());
         }
         for (int i = 0; i < addresses.size(); i++) {
-            sb.append('\n').append(addresses.get(i).getDetail());
+            sb.append("\naddress: ").append(addresses.get(i).getDetail());
         }
         return sb.toString();
     }
@@ -77,12 +89,12 @@ public class Contact {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Contact contact = (Contact) o;
-        return Objects.equals(name, contact.name) && Objects.equals(phones, contact.phones) && Objects.equals(addresses, contact.addresses);
+        return lookupKey.equals(contact.lookupKey) && name.equals(contact.name) && account.equals(contact.account) && phones.equals(contact.phones) && addresses.equals(contact.addresses);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, phones, addresses);
+        return Objects.hash(lookupKey, name, account, phones, addresses);
     }
 }
 
