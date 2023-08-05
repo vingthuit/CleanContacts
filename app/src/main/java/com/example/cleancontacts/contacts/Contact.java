@@ -8,13 +8,15 @@ import java.util.Objects;
 import java.util.Set;
 
 public class Contact {
+    private String id;
     private String lookupKey;
     private String name;
     private String account;
     private Set<ContactDetail> phones;
     private Set<ContactDetail> addresses;
 
-    public Contact(String lookupKey, String name,  String account, Set<ContactDetail> phones, Set<ContactDetail> addresses) {
+    public Contact(String id, String lookupKey, String name,  String account, Set<ContactDetail> phones, Set<ContactDetail> addresses) {
+        this.id = id;
         this.lookupKey = lookupKey;
         this.name = name;
         this.account = account;
@@ -28,6 +30,14 @@ public class Contact {
         this.account = "null";
         this.phones = new HashSet<>();
         this.addresses = new HashSet<>();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getLookupKey() {
@@ -89,12 +99,12 @@ public class Contact {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Contact contact = (Contact) o;
-        return lookupKey.equals(contact.lookupKey) && name.equals(contact.name) && account.equals(contact.account) && phones.equals(contact.phones) && addresses.equals(contact.addresses);
+        return id.equals(contact.id) && lookupKey.equals(contact.lookupKey) && name.equals(contact.name) && account.equals(contact.account) && phones.equals(contact.phones) && addresses.equals(contact.addresses);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lookupKey, name, account, phones, addresses);
+        return Objects.hash(id, lookupKey, name, account, phones, addresses);
     }
 }
 

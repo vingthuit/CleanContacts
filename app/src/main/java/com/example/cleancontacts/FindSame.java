@@ -1,12 +1,14 @@
 package com.example.cleancontacts;
 
 import static com.example.cleancontacts.contacts.ContactManager.areSameNames;
-import static com.example.cleancontacts.contacts.ContactManager.deleteContact;
 import static com.example.cleancontacts.contacts.ContactManager.getContactList;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -40,16 +42,18 @@ public class FindSame extends AppCompatActivity {
 
         getStringContacts();
         contactList.setAdapter(adapter);
-        delete();
+        modify();
     }
 
-    public void delete() {
+    public void modify() {
         contactList.setOnItemClickListener((parent, view, position, id) -> {
-            Contact c = twoContacts.get(position);
-            if (c != null) {
-                deleteContact(c.getLookupKey());
-                contacts.remove(c);
-                onNext(view);
+            Contact contact = twoContacts.get(position);
+            if (contact != null) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI,
+                        String.valueOf(contact.getId()));
+                intent.setData(uri);
+                startActivity(intent);
             }
         });
     }

@@ -15,6 +15,7 @@ import org.w3c.dom.ls.LSOutput;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -44,22 +45,11 @@ public class ContactManager {
                 if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
                     getPhones(id, phones);
                 }
+
                 Set<ContactDetail> addresses = getAddresses(id);
-                if (phones.isEmpty() && addresses.isEmpty()) {
-                    ArrayList<ContentProviderOperation> ops = new ArrayList<>();
-                    ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                            .withValue(ContactsContract.Data.RAW_CONTACT_ID, id)
-                            .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                            .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, "000000000000000000000").
-                            withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK)
-                            .build());
-                    contentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
-                }
-                contacts.add(new Contact(lookupKey, name, account, phones, addresses));
+                contacts.add(new Contact(id, lookupKey, name, account, phones, addresses));
             }
             contacts.sort(new ContactComparator());
-        } catch (RemoteException | OperationApplicationException e) {
-            throw new RuntimeException(e);
         }
     }
 
