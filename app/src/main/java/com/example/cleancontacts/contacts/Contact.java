@@ -2,19 +2,19 @@ package com.example.cleancontacts.contacts;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class Contact {
     private String lookupKey;
     private String name;
     private String account;
-    private List<ContactDetail> phones;
-    private List<ContactDetail> addresses;
+    private Set<ContactDetail> phones;
+    private Set<ContactDetail> addresses;
 
-    public Contact(String lookupKey, String name,  String account, List<ContactDetail> phones, List<ContactDetail> addresses) {
+    public Contact(String lookupKey, String name,  String account, Set<ContactDetail> phones, Set<ContactDetail> addresses) {
         this.lookupKey = lookupKey;
         this.name = name;
         this.account = account;
@@ -26,8 +26,8 @@ public class Contact {
         this.lookupKey = "-1";
         this.name = "emptyContact";
         this.account = "null";
-        this.phones = new ArrayList<>();
-        this.addresses = new ArrayList<>();
+        this.phones = new HashSet<>();
+        this.addresses = new HashSet<>();
     }
 
     public String getLookupKey() {
@@ -54,19 +54,19 @@ public class Contact {
         this.account = account;
     }
 
-    public List<ContactDetail> getPhones() {
+    public Set<ContactDetail> getPhones() {
         return phones;
     }
 
-    public void setPhones(List<ContactDetail> phones) {
+    public void setPhones(Set<ContactDetail> phones) {
         this.phones = phones;
     }
 
-    public List<ContactDetail> getAddresses() {
+    public Set<ContactDetail> getAddresses() {
         return addresses;
     }
 
-    public void setAddresses(List<ContactDetail> addresses) {
+    public void setAddresses(Set<ContactDetail> addresses) {
         this.addresses = addresses;
     }
 
@@ -75,11 +75,11 @@ public class Contact {
     public String toString() {
         StringBuilder sb = new StringBuilder(name);
         sb.append("\naccount: ").append(account);
-        for (int i = 0; i < phones.size(); i++) {
-            sb.append("\nphone: ").append(phones.get(i).getDetail());
+        for (ContactDetail phone: phones) {
+            sb.append("\nphone: ").append(phone.getDetail());
         }
-        for (int i = 0; i < addresses.size(); i++) {
-            sb.append("\naddress: ").append(addresses.get(i).getDetail());
+        for (ContactDetail address: addresses) {
+            sb.append("\naddress: ").append(address.getDetail());
         }
         return sb.toString();
     }

@@ -3,20 +3,26 @@ package com.example.cleancontacts.contacts;
 import android.annotation.SuppressLint;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.util.Log;
+
+import org.w3c.dom.ls.LSOutput;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class ContactManager {
     private static ContentResolver contentResolver;
     private static ArrayList<Contact> contacts;
+
     public static ArrayList<Contact> getContactList() {
         return contacts;
     }
@@ -32,19 +38,28 @@ public class ContactManager {
                 String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
                 String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
                 String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                if (name == null) {
-                    name = "empty";
-                }
                 String account = cursor.getString(cursor.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_NAME));
 
-                List<ContactDetail> phones = new ArrayList<>();
+                Set<ContactDetail> phones = new HashSet<>();
                 if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
                     getPhones(id, phones);
                 }
-                List<ContactDetail> addresses = getAddresses(id);
+                Set<ContactDetail> addresses = getAddresses(id);
+                if (phones.isEmpty() && addresses.isEmpty()) {
+                    ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+                    ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                            .withValue(ContactsContract.Data.RAW_CONTACT_ID, id)
+                            .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                            .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, "000000000000000000000").
+                            withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK)
+                            .build());
+                    contentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
+                }
                 contacts.add(new Contact(lookupKey, name, account, phones, addresses));
             }
             contacts.sort(new ContactComparator());
+        } catch (RemoteException | OperationApplicationException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -74,7 +89,10 @@ public class ContactManager {
     }
 
     @SuppressLint("Range")
-    private static void getPhones(String id, List<ContactDetail> phones) {
+    private static void getPhones(String id, Set<ContactDetail> phones) {
+        if (Objects.equals(id, "348")) {
+            System.out.println();
+        }
         try (Cursor cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null)) {
             while (cursor.moveToNext()) {
@@ -86,8 +104,8 @@ public class ContactManager {
     }
 
     @SuppressLint("Range")
-    private static List<ContactDetail> getAddresses(String id) {
-        List<ContactDetail> addresses = new ArrayList<>();
+    private static Set<ContactDetail> getAddresses(String id) {
+        Set<ContactDetail> addresses = new HashSet<>();
         try (Cursor cursor = contentResolver.query(
                 ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI, null,
                 ContactsContract.CommonDataKinds.StructuredPostal.CONTACT_ID + " = "
