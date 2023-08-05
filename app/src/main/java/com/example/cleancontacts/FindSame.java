@@ -1,6 +1,7 @@
 package com.example.cleancontacts;
 
 import static com.example.cleancontacts.contacts.ContactManager.areSameNames;
+import static com.example.cleancontacts.contacts.ContactManager.getContact;
 import static com.example.cleancontacts.contacts.ContactManager.getContactList;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,13 +50,20 @@ public class FindSame extends AppCompatActivity {
         contactList.setOnItemClickListener((parent, view, position, id) -> {
             Contact contact = twoContacts.get(position);
             if (contact != null) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI,
-                        String.valueOf(contact.getId()));
-                intent.setData(uri);
-                startActivity(intent);
+                openStandard();
+
+                Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, String.valueOf(contact.getId()));
+                getContact(String.valueOf(id));
             }
         });
+    }
+
+    private void openStandard(){
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI,
+                String.valueOf(contact.getId()));
+        intent.setData(uri);
+        startActivity(intent);
     }
 
     private void getStringContacts() {

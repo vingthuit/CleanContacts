@@ -68,6 +68,16 @@ public class ContactManager {
         return name.replace(toBeReplaced, "");
     }
 
+    public static void getContact(String id) {
+        try {
+            //make field lookupKey or uri in Contact
+            Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, id);
+            contentResolver.getType(uri);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void deleteContact(String lookupKey) {
         try {
             //make field lookupKey or uri in Contact
