@@ -19,7 +19,6 @@
         android:id="@+id/header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/next_button"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@id/contact_list"
         app:layout_constraintLeft_toLeftOf="parent"

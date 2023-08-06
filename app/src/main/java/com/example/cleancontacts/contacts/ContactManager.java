@@ -11,7 +11,6 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 public class ContactManager {
@@ -53,7 +52,7 @@ public class ContactManager {
 
         Set<ContactDetail> addresses = getAddresses(id);
 
-        return new Contact(id, lookupKey, name, account.toString(), phones, addresses);
+        return new Contact(id, name, account.toString(), phones, addresses);
     }
 
     @SuppressLint("Range")
@@ -83,9 +82,6 @@ public class ContactManager {
 
     @SuppressLint("Range")
     private static void getPhones(String id, Set<ContactDetail> phones) {
-        if (Objects.equals(id, "348")) {
-            System.out.println();
-        }
         try (Cursor cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null)) {
             while (cursor.moveToNext()) {

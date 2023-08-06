@@ -9,15 +9,13 @@ import java.util.Set;
 
 public class Contact {
     private String id;
-    private String lookupKey;
     private String name;
     private String account;
     private Set<ContactDetail> phones;
     private Set<ContactDetail> addresses;
 
-    public Contact(String id, String lookupKey, String name,  String account, Set<ContactDetail> phones, Set<ContactDetail> addresses) {
+    public Contact(String id, String name, String account, Set<ContactDetail> phones, Set<ContactDetail> addresses) {
         this.id = id;
-        this.lookupKey = lookupKey;
         this.name = name;
         this.account = account;
         this.phones = phones;
@@ -25,7 +23,6 @@ public class Contact {
     }
 
     public Contact() {
-        this.lookupKey = "-1";
         this.name = "emptyContact";
         this.account = "null";
         this.phones = new HashSet<>();
@@ -38,14 +35,6 @@ public class Contact {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getLookupKey() {
-        return lookupKey;
-    }
-
-    public void setLookupKey(String lookupKey) {
-        this.lookupKey = lookupKey;
     }
 
     public String getName() {
@@ -80,15 +69,24 @@ public class Contact {
         this.addresses = addresses;
     }
 
+    public boolean hasSamePhone(Contact contact) {
+        for (ContactDetail phone : phones) {
+            if (contact.getPhones().contains(phone)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @NonNull
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(name);
         sb.append("\naccount: ").append(account);
-        for (ContactDetail phone: phones) {
+        for (ContactDetail phone : phones) {
             sb.append("\nphone: ").append(phone.getDetail());
         }
-        for (ContactDetail address: addresses) {
+        for (ContactDetail address : addresses) {
             sb.append("\naddress: ").append(address.getDetail());
         }
         return sb.toString();
@@ -99,12 +97,14 @@ public class Contact {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Contact contact = (Contact) o;
-        return id.equals(contact.id) && lookupKey.equals(contact.lookupKey) && name.equals(contact.name) && account.equals(contact.account) && phones.equals(contact.phones) && addresses.equals(contact.addresses);
+        return id.equals(contact.id) && name.equals(contact.name) &&
+                account.equals(contact.account) && phones.equals(contact.phones) &&
+                addresses.equals(contact.addresses);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, lookupKey, name, account, phones, addresses);
+        return Objects.hash(id, name, account, phones, addresses);
     }
 }
 

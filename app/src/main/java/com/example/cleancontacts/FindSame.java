@@ -40,7 +40,7 @@ public class FindSame extends AppCompatActivity {
         stringContacts = new ArrayList<>();
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stringContacts);
 
-        compareContacts();
+        getSameContacts();
         modify();
     }
 
@@ -82,25 +82,25 @@ public class FindSame extends AppCompatActivity {
         stringContacts.add(contact.toString());
     }
 
-    private void compareContacts() {
+    private void getSameContacts() {
         for (int i = 0; i < contacts.size() - 1; i++) {
             Contact first = contacts.get(i);
-            Contact next = contacts.get(i + 1);
-            int distance = comparator.calculateDistance(first.getName(), next.getName());
-            if (distance < 3) {
+            int j = i + 1;
+            if (compareContacts(first, contacts.get(j))) {
                 addContact(first);
-                int j = i + 1;
-                while (distance < 3) {
-                    addContact(next);
-
+                while (compareContacts(first, contacts.get(j))) {
+                    addContact(contacts.get(j));
                     j++;
-                    next = contacts.get(j);
-                    distance = comparator.calculateDistance(first.getName(), next.getName());
                 }
                 break;
             }
         }
         contactList.setAdapter(adapter);
+    }
+
+    private boolean compareContacts(Contact first, Contact next){
+        int distance = comparator.calculateDistance(first.getName(), next.getName());
+        return  distance < 3 && first.hasSamePhone(next);
     }
 
     private void clearAll() {
@@ -112,6 +112,6 @@ public class FindSame extends AppCompatActivity {
 
     public void onNext(View view) {
         clearAll();
-        compareContacts();
+        getSameContacts();
     }
 }
