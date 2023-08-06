@@ -3,20 +3,14 @@ package com.example.cleancontacts.contacts;
 import android.annotation.SuppressLint;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
-import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.util.Log;
-
-import org.w3c.dom.ls.LSOutput;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -35,49 +29,46 @@ public class ContactManager {
         try (Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, null)) {
             while (cursor.moveToNext()) {
-                // получаем каждый контакт
-                String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-                String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-                String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-
-                StringBuilder account = new StringBuilder(cursor.getString(cursor.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_NAME)));
-                String accountType = cursor.getString(cursor.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_TYPE));
-                account.append(" (").append(accountType).append(')');
-
-                Set<ContactDetail> phones = new HashSet<>();
-                if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
-                    getPhones(id, phones);
-                }
-
-                Set<ContactDetail> addresses = getAddresses(id);
-                contacts.add(new Contact(id, lookupKey, name, account.toString(), phones, addresses));
+                Contact contact = getContactFromCursor(cursor);
+                contacts.add(contact);
             }
             contacts.sort(new ContactComparator());
         }
     }
 
-    public static boolean areSameNames(String first, String second) {
-        first = remove(first);
-        second = remove(second);
-        return first.equals(second) || first.contains(second) || second.contains(first);
-    }
+    @SuppressLint("Range")
+    private static Contact getContactFromCursor(Cursor cursor) {
+        String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+        String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+        String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 
-    public static String remove(String name) {
-        int startIndex = name.indexOf("/");
-        if (startIndex == -1) {
-            return name;
+        StringBuilder account = new StringBuilder(cursor.getString(cursor.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_NAME)));
+        String accountType = cursor.getString(cursor.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_TYPE));
+        account.append(" (").append(accountType).append(')');
+
+        Set<ContactDetail> phones = new HashSet<>();
+        if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
+            getPhones(id, phones);
         }
-        String toBeReplaced = name.substring(startIndex);
-        return name.replace(toBeReplaced, "");
+
+        Set<ContactDetail> addresses = getAddresses(id);
+
+        return new Contact(id, lookupKey, name, account.toString(), phones, addresses);
     }
 
-    public static void getContact(String id) {
-        try {
-            Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, id);
-            contentResolver.getType(uri);
+    @SuppressLint("Range")
+    public static Contact getContactById(String id) {
+        Contact contact = new Contact();
+        String selection = ContactsContract.Contacts._ID + " =" + id;
+        try (Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
+                null, selection, null, null)) {
+            if (cursor.moveToFirst()) {
+                contact = getContactFromCursor(cursor);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return contact;
     }
 
     public static void deleteContact(String lookupKey) {

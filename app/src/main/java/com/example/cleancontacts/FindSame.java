@@ -1,6 +1,6 @@
 package com.example.cleancontacts;
 
-import static com.example.cleancontacts.contacts.ContactManager.getContact;
+import static com.example.cleancontacts.contacts.ContactManager.getContactById;
 import static com.example.cleancontacts.contacts.ContactManager.getContactList;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +25,10 @@ public class FindSame extends AppCompatActivity {
     private ListView contactList;
     private final StringComparator comparator = new LevenshteinDistance();
 
+    private boolean paused;
+    private String currId;
+    private int currPos;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +41,6 @@ public class FindSame extends AppCompatActivity {
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stringContacts);
 
         compareContacts();
-
         modify();
     }
 
@@ -45,12 +48,26 @@ public class FindSame extends AppCompatActivity {
         contactList.setOnItemClickListener((parent, view, position, id) -> {
             Contact contact = nextContacts.get(position);
             if (contact != null) {
+                currPos = position;
+                currId = contact.getId();
                 openStandardApp(contact.getId());
-
-                Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, String.valueOf(contact.getId()));
-                getContact(String.valueOf(id));
             }
         });
+    }
+
+    protected void onPause() {
+        super.onPause();
+        paused = true;
+    }
+
+    protected void onResume() {
+        super.onResume();
+        if (paused) {
+            paused = false;
+            Contact contact = getContactById(String.valueOf(currId));
+            stringContacts.set(currPos, contact.toString());
+            contactList.setAdapter(adapter);
+        }
     }
 
     private void openStandardApp(String id) {
@@ -60,7 +77,7 @@ public class FindSame extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void addContact(Contact contact){
+    private void addContact(Contact contact) {
         nextContacts.add(contact);
         stringContacts.add(contact.toString());
     }
@@ -86,7 +103,7 @@ public class FindSame extends AppCompatActivity {
         contactList.setAdapter(adapter);
     }
 
-    private void clearAll(){
+    private void clearAll() {
         adapter.clear();
         nextContacts.forEach(v -> contacts.remove(v));
         nextContacts.clear();
