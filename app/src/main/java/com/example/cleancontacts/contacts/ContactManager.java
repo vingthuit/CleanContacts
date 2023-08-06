@@ -39,7 +39,10 @@ public class ContactManager {
                 String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
                 String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
                 String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                String account = cursor.getString(cursor.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_NAME));
+
+                StringBuilder account = new StringBuilder(cursor.getString(cursor.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_NAME)));
+                String accountType = cursor.getString(cursor.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_TYPE));
+                account.append(" (").append(accountType).append(')');
 
                 Set<ContactDetail> phones = new HashSet<>();
                 if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
@@ -47,7 +50,7 @@ public class ContactManager {
                 }
 
                 Set<ContactDetail> addresses = getAddresses(id);
-                contacts.add(new Contact(id, lookupKey, name, account, phones, addresses));
+                contacts.add(new Contact(id, lookupKey, name, account.toString(), phones, addresses));
             }
             contacts.sort(new ContactComparator());
         }
@@ -70,7 +73,6 @@ public class ContactManager {
 
     public static void getContact(String id) {
         try {
-            //make field lookupKey or uri in Contact
             Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, id);
             contentResolver.getType(uri);
         } catch (Exception e) {
