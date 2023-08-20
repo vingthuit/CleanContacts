@@ -4,6 +4,7 @@
     <string name="find_button">Find</string>
     <string name="update">Update</string>
     <string name="hello">Hello from Fragment</string>
+    <string name="back_button">Back</string>
     <string name="next_button">Next</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

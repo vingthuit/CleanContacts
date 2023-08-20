@@ -22,7 +22,7 @@ public class ContactManager {
     }
 
     @SuppressLint("Range")
-    public static void setContactList(ContentResolver contentResolver) {
+    public static void loadContactList(ContentResolver contentResolver) {
         ContactManager.contentResolver = contentResolver;
         contacts = new ArrayList<>();
         try (Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
@@ -38,7 +38,6 @@ public class ContactManager {
     @SuppressLint("Range")
     private static Contact getContactFromCursor(Cursor cursor) {
         String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-        String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
         String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 
         StringBuilder account = new StringBuilder(cursor.getString(cursor.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_NAME)));
@@ -49,7 +48,6 @@ public class ContactManager {
         if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
             getPhones(id, phones);
         }
-
         Set<ContactDetail> addresses = getAddresses(id);
 
         return new Contact(id, name, account.toString(), phones, addresses);
@@ -68,16 +66,6 @@ public class ContactManager {
             e.printStackTrace();
         }
         return contact;
-    }
-
-    public static void deleteContact(String lookupKey) {
-        try {
-            //make field lookupKey or uri in Contact
-            Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
-            contentResolver.delete(uri, null, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @SuppressLint("Range")
@@ -113,31 +101,32 @@ public class ContactManager {
         return phone.replaceAll("[()\\- ]", "");
     }
 
-    private String checkPhones(String nums) {
-        nums = nums.replaceFirst("\n", "");
-        String[] phones = nums.split("\n");
-        Set<String> set = new HashSet<>(Arrays.asList(phones));
-        if (set.size() != phones.length) {
-            nums += "\nsame";
+    /*    public static void deleteContact(String lookupKey) {
+        try {
+            //make field lookupKey or uri in Contact
+            Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
+            contentResolver.delete(uri, null, null);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return "\n" + nums;
-    }
+    }*/
 
+/*
     //make in new thread
     private void insertContact(String name) {
         ArrayList<ContentProviderOperation> op = new ArrayList<>();
-        /* Добавляем пустой контакт */
+        *//* Добавляем пустой контакт *//*
         op.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
                 .build());
-        /* Добавляем данные имени */
+        *//* Добавляем данные имени *//*
         op.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
                 .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
                 .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
                 .build());
-        /* Добавляем данные телефона */
+        *//* Добавляем данные телефона *//*
         op.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
                 .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
@@ -155,5 +144,41 @@ public class ContactManager {
         } catch (Exception e) {
             Log.e("Exception: ", e.getMessage());
         }
+    }*/
+
+    /*
+    @SuppressLint("Range")
+    private static String getRawContactId(String contactId) {
+        String[] projection = new String[]{ContactsContract.RawContacts._ID};
+        String selection = ContactsContract.RawContacts.CONTACT_ID + "=?";
+        String[] selectionArgs = new String[]{contactId};
+        Cursor c = contentResolver.query(ContactsContract.RawContacts.CONTENT_URI, projection, selection, selectionArgs, null);
+        if (c == null) return null;
+        int rawContactId = -1;
+        if (c.moveToFirst()) {
+            rawContactId = c.getInt(c.getColumnIndex(ContactsContract.RawContacts._ID));
+        }
+        c.close();
+        return String.valueOf(rawContactId);
+
     }
+
+    @SuppressLint("Range")
+    public static String getOrganization(String id) {
+        String rawContactId = getRawContactId(id);
+        String name = null;
+        String orgWhere = ContactsContract.Data.RAW_CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?";
+        String[] orgWhereParams = new String[]{rawContactId,
+                ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE};
+        try (Cursor cursor = contentResolver.query(ContactsContract.Data.CONTENT_URI,
+                null, orgWhere, orgWhereParams, null)) {
+            if (cursor.moveToFirst()) {
+                name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Organization.COMPANY));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return name;
+    }*/
+
 }

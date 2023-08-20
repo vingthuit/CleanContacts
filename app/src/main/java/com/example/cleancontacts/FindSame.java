@@ -23,7 +23,6 @@ public class FindSame extends AppCompatActivity {
     private ArrayList<String> stringContacts;
     private ArrayAdapter<String> adapter;
     private ListView contactList;
-    private final StringComparator comparator = new LevenshteinDistance();
 
     private boolean paused;
     private String currId;
@@ -99,8 +98,7 @@ public class FindSame extends AppCompatActivity {
     }
 
     private boolean compareContacts(Contact first, Contact next){
-        int distance = comparator.calculateDistance(first.getName(), next.getName());
-        return  distance < 3 && first.hasSamePhone(next);
+        return first.hasSameName(next.getName()) || first.hasSamePhone(next);
     }
 
     private void clearAll() {
@@ -113,5 +111,9 @@ public class FindSame extends AppCompatActivity {
     public void onNext(View view) {
         clearAll();
         getSameContacts();
+    }
+
+    public void onBack(View view) {
+        return;
     }
 }

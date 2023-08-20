@@ -9,6 +9,7 @@
         android:id="@+id/find_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="304dp"
         android:onClick="onFind"
         android:text="@string/find_button"
         app:layout_constraintBottom_toTopOf="@id/header"

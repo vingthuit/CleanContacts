@@ -2,6 +2,9 @@ package com.example.cleancontacts.contacts;
 
 import androidx.annotation.NonNull;
 
+import com.example.cleancontacts.LevenshteinDistance;
+import com.example.cleancontacts.StringComparator;
+
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Objects;
@@ -13,6 +16,8 @@ public class Contact {
     private String account;
     private Set<ContactDetail> phones;
     private Set<ContactDetail> addresses;
+
+    private final StringComparator comparator = new LevenshteinDistance();
 
     public Contact(String id, String name, String account, Set<ContactDetail> phones, Set<ContactDetail> addresses) {
         this.id = id;
@@ -67,6 +72,11 @@ public class Contact {
 
     public void setAddresses(Set<ContactDetail> addresses) {
         this.addresses = addresses;
+    }
+
+    public boolean hasSameName(String nameToCompare) {
+        int distance = comparator.calculateDistance(name, nameToCompare);
+        return distance < 3;
     }
 
     public boolean hasSamePhone(Contact contact) {
