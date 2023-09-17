@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onFind(View view) {
         Intent intent = new Intent(MainActivity.this, FindSame.class);
+        loadContacts();
         startActivity(intent);
     }
 }
