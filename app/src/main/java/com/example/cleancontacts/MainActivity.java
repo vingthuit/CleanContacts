@@ -8,9 +8,11 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -72,12 +74,6 @@ public class MainActivity extends AppCompatActivity {
     private void loadContacts() {
         stringContacts.clear();
         loadContactList(getContentResolver());
-        ArrayList<Contact> contacts = getContactList();
-
-        contacts.forEach(c -> stringContacts.add(c.toString()));
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stringContacts);
-        ListView contactList = findViewById(R.id.contact_list);
-        contactList.setAdapter(adapter);
     }
 
     public void onFind(View view) {
