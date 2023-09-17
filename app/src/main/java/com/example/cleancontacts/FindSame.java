@@ -1,21 +1,25 @@
 package com.example.cleancontacts;
 
-import static com.example.cleancontacts.contacts.ContactManager.getContactById;
+import static com.example.cleancontacts.contacts.ContactManager.deleteContact;
 import static com.example.cleancontacts.contacts.ContactManager.getContactList;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.cleancontacts.contacts.Contact;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class FindSame extends AppCompatActivity {
     private ArrayList<Contact> contacts;
@@ -23,9 +27,6 @@ public class FindSame extends AppCompatActivity {
     private ArrayList<String> stringContacts;
     private ArrayAdapter<String> adapter;
     private ListView contactList;
-
-    private boolean paused;
-    private String currId;
     private int currPos;
 
     @Override
@@ -45,28 +46,47 @@ public class FindSame extends AppCompatActivity {
 
     public void modify() {
         contactList.setOnItemClickListener((parent, view, position, id) -> {
-            Contact contact = nextContacts.get(position);
-            if (contact != null) {
-                currPos = position;
-                currId = contact.getId();
-                openStandardApp(contact.getId());
-            }
+            clickOnContact(position);
         });
     }
 
-    protected void onPause() {
-        super.onPause();
-        paused = true;
+    private void clickOnContact(int position) {
+        Contact contact = nextContacts.get(position);
+        if (contact != null) {
+            currPos = position;
+            openDialog(contact);
+        }
     }
 
-    protected void onResume() {
-        super.onResume();
-        if (paused) {
-            paused = false;
-            Contact contact = getContactById(String.valueOf(currId));
-            stringContacts.set(currPos, contact.toString());
-            contactList.setAdapter(adapter);
-        }
+    private void openDialog(Contact contact) {
+        AlertDialog contactDialog = new AlertDialog.Builder(
+                FindSame.this).setMessage("open in standard app or delete?")
+                .setNegativeButton("open", (dialog, which) -> {
+                    openStandardApp(contact.getId());
+                })
+                .setPositiveButton("delete", (dialog, which) -> {
+                    deleteContact(contact.getLookupKey());
+                    deleteContactFromList();
+                })
+                .create();
+        contactDialog.show();
+        ((TextView) Objects.requireNonNull(contactDialog.findViewById(android.R.id.message)))
+                .setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    private void deleteFromList(){
+        nextContacts.remove(currPos);
+        stringContacts.remove(currPos);
+    }
+
+    private void deleteContactFromList() {
+        deleteFromList();
+        contactList.setAdapter(adapter);
+    }
+
+    private void addToList(Contact contact) {
+        nextContacts.add(contact);
+        stringContacts.add(contact.toString());
     }
 
     private void openStandardApp(String id) {
@@ -76,19 +96,14 @@ public class FindSame extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void addContact(Contact contact) {
-        nextContacts.add(contact);
-        stringContacts.add(contact.toString());
-    }
-
     private void getSameContacts() {
         for (int i = 0; i < contacts.size() - 1; i++) {
             Contact first = contacts.get(i);
             int j = i + 1;
             if (compareContacts(first, contacts.get(j))) {
-                addContact(first);
+                addToList(first);
                 while (compareContacts(first, contacts.get(j))) {
-                    addContact(contacts.get(j));
+                    addToList(contacts.get(j));
                     j++;
                 }
                 break;
@@ -97,7 +112,7 @@ public class FindSame extends AppCompatActivity {
         contactList.setAdapter(adapter);
     }
 
-    private boolean compareContacts(Contact first, Contact next){
+    private boolean compareContacts(Contact first, Contact next) {
         return first.hasSameName(next.getName()) || first.hasSamePhone(next);
     }
 

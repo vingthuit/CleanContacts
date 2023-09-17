@@ -4,7 +4,7 @@
     <string name="update">Update</string>
     <string name="back_button">Back</string>
     <string name="next_button">Next</string>
-    <string name="description">Здесь будет описание. Чтобы найти похожие контакты, нажми кнопку Find</string>
+    <string name="description">There will be a description here. To find similar contacts click the Find button</string>
 
     <string name="activity_sample_device_admin">DeviceAdminSample</string>
     <string name="sample_device_admin">adminPermission</string>

@@ -12,6 +12,7 @@ import java.util.Set;
 
 public class Contact {
     private String id;
+    private String lookupKey;
     private String name;
     private String account;
     private Set<ContactDetail> phones;
@@ -19,19 +20,13 @@ public class Contact {
 
     private final StringComparator comparator = new LevenshteinDistance();
 
-    public Contact(String id, String name, String account, Set<ContactDetail> phones, Set<ContactDetail> addresses) {
+    public Contact(String id, String lookupKey, String name, String account, Set<ContactDetail> phones, Set<ContactDetail> addresses) {
         this.id = id;
+        this.lookupKey = lookupKey;
         this.name = name;
         this.account = account;
         this.phones = phones;
         this.addresses = addresses;
-    }
-
-    public Contact() {
-        this.name = "emptyContact";
-        this.account = "null";
-        this.phones = new HashSet<>();
-        this.addresses = new HashSet<>();
     }
 
     public String getId() {
@@ -40,6 +35,14 @@ public class Contact {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getLookupKey() {
+        return lookupKey;
+    }
+
+    public void setLookupKey(String lookupKey) {
+        this.lookupKey = lookupKey;
     }
 
     public String getName() {

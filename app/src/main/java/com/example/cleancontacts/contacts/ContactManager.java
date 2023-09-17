@@ -38,6 +38,7 @@ public class ContactManager {
     @SuppressLint("Range")
     private static Contact getContactFromCursor(Cursor cursor) {
         String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+        String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
         String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 
         StringBuilder account = new StringBuilder(cursor.getString(cursor.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_NAME)));
@@ -50,12 +51,12 @@ public class ContactManager {
         }
         Set<ContactDetail> addresses = getAddresses(id);
 
-        return new Contact(id, name, account.toString(), phones, addresses);
+        return new Contact(id, lookupKey, name, account.toString(), phones, addresses);
     }
 
     @SuppressLint("Range")
     public static Contact getContactById(String id) {
-        Contact contact = new Contact();
+        Contact contact = null;
         String selection = ContactsContract.Contacts._ID + " =" + id;
         try (Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
                 null, selection, null, null)) {
@@ -101,15 +102,14 @@ public class ContactManager {
         return phone.replaceAll("[()\\- ]", "");
     }
 
-    /*    public static void deleteContact(String lookupKey) {
+    public static void deleteContact(String lookupKey) {
         try {
-            //make field lookupKey or uri in Contact
             Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
             contentResolver.delete(uri, null, null);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }*/
+    }
 
 /*
     //make in new thread
