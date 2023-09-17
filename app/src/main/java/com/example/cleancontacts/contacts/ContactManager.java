@@ -1,15 +1,12 @@
 package com.example.cleancontacts.contacts;
 
 import android.annotation.SuppressLint;
-import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
-import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 

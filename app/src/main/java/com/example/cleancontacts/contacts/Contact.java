@@ -6,7 +6,6 @@ import com.example.cleancontacts.LevenshteinDistance;
 import com.example.cleancontacts.StringComparator;
 
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
