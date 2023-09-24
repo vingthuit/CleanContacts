@@ -5,7 +5,9 @@
     <string name="back_button">Back</string>
     <string name="next_button">Next</string>
     <string name="home_button">Home</string>
-    <string name="description">There will be a description here. To find similar contacts click the Find button</string>
+    <string name="description">This application searches for similar contacts and
+        deletes them from your phone by clicking. This does not work with a xiaomi account. You need
+        to go to the standard application and delete through it. To find similar contacts click the Find button</string>
 
     <string name="activity_sample_device_admin">DeviceAdminSample</string>
     <string name="sample_device_admin">adminPermission</string>

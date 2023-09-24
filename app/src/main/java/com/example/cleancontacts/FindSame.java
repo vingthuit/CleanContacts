@@ -71,9 +71,10 @@ public class FindSame extends AppCompatActivity {
                     startActivity(intent);
                 })
                 .setPositiveButton("delete", (dialog, which) -> {
-                    deleteContact(contact.getLookupKey());
+                    deleteContact(contact);
                     nextContacts.remove(clickedContact);
                     stringContacts.remove(clickedContact);
+                    sameContacts.get(currSamePos).remove(contact);
                     contactList.setAdapter(adapter);
                 })
                 .create();
@@ -124,6 +125,10 @@ public class FindSame extends AppCompatActivity {
         clearAll();
         currSamePos++;
         getSameContacts();
+    }
+
+    public void onHome(View view) {
+        finish();
     }
 
     public void onBack(View view) {

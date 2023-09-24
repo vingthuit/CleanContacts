@@ -8,6 +8,7 @@ import android.provider.ContactsContract;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class ContactManager {
@@ -99,13 +100,10 @@ public class ContactManager {
         return phone.replaceAll("[()\\- ]", "");
     }
 
-    public static void deleteContact(String lookupKey) {
-        try {
-            Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
-            contentResolver.delete(uri, null, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @SuppressLint("Range")
+    public static void deleteContact(Contact contact) {
+        Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, contact.getLookupKey());
+        contentResolver.delete(uri, null, null);
     }
 
 /*
