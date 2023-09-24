@@ -13,6 +13,7 @@ import android.provider.ContactsContract;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -31,12 +32,15 @@ public class FindSame extends AppCompatActivity {
     private ArrayAdapter<String> adapter;
     private ListView contactList;
     private int clickedContact;
-    private int currSamePos = -1;
+    private int currSamePos = 0;
+    private Button onNextButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_same);
+
+        onNextButton = findViewById(R.id.next_button);
 
         contacts = getContactList();
         sameContacts = new ArrayList<>();
@@ -98,11 +102,11 @@ public class FindSame extends AppCompatActivity {
                 }
                 list.forEach(c -> contacts.remove(c)); // remove prev duplicates
                 sameContacts.add(list);
-                currSamePos++;
                 addToList(list);
                 return;
             }
         }
+        onNextButton.setEnabled(false);
     }
 
     private void clearAll() {
@@ -118,10 +122,12 @@ public class FindSame extends AppCompatActivity {
             return;
         }
         clearAll();
+        currSamePos++;
         getSameContacts();
     }
 
     public void onBack(View view) {
+        onNextButton.setEnabled(true);
         if (currSamePos == 0) {
             finish();
             return;
@@ -131,7 +137,6 @@ public class FindSame extends AppCompatActivity {
     }
 
     private void getSame() {
-        System.out.println(currSamePos);
         clearAll();
         addToList(sameContacts.get(currSamePos));
     }

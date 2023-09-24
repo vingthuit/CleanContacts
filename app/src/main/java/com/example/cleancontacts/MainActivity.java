@@ -1,6 +1,5 @@
 package com.example.cleancontacts;
 
-import static com.example.cleancontacts.contacts.ContactManager.getContactList;
 import static com.example.cleancontacts.contacts.ContactManager.loadContactList;
 
 import android.Manifest;
@@ -8,19 +7,13 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
-import com.example.cleancontacts.contacts.Contact;
 
 import java.util.ArrayList;
 

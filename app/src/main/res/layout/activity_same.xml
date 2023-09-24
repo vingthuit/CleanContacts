@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -12,9 +13,9 @@
         android:layout_marginStart="8dp"
         android:onClick="onBack"
         android:text="@string/back_button"
-        app:layout_constraintBottom_toTopOf="@id/header"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/next_button"
@@ -23,27 +24,28 @@
         android:layout_marginStart="290dp"
         android:onClick="onNext"
         android:text="@string/next_button"
-        app:layout_constraintBottom_toTopOf="@id/header"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/header"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@id/contact_list"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/next_button" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="MissingConstraints" />
 
     <ListView
         android:id="@+id/contact_list"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="405dp"
+        android:layout_height="592dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header" />
+        app:layout_constraintTop_toBottomOf="@+id/back_button" />
+
+    <Button
+        android:id="@+id/home_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onHome"
+        android:text="@string/home_button"
+        app:layout_constraintLeft_toLeftOf="@+id/next_button"
+        app:layout_constraintBottom_toBottomOf="@+id/contact_list"
+        app:layout_constraintTop_toBottomOf="@+id/contact_list"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
