@@ -1,17 +1,14 @@
 package com.example.cleancontacts.contacts;
 
 import android.annotation.SuppressLint;
-import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
-import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class ContactManager {
@@ -23,56 +20,55 @@ public class ContactManager {
     }
 
     @SuppressLint("Range")
-    public static void setContactList(ContentResolver contentResolver) {
+    public static void loadContactList(ContentResolver contentResolver) {
         ContactManager.contentResolver = contentResolver;
         contacts = new ArrayList<>();
         try (Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, null)) {
             while (cursor.moveToNext()) {
-                // получаем каждый контакт
-                String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-                String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-                String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                if (name == null) {
-                    name = "empty";
-                }
-                List<ContactDetail> phones = new ArrayList<>();
-                if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
-                    getPhones(id, phones);
-                }
-                List<ContactDetail> addresses = getAddresses(id);
-                contacts.add(new Contact(lookupKey, name, phones, addresses));
+                Contact contact = getContactFromCursor(cursor);
+                contacts.add(contact);
             }
             contacts.sort(new ContactComparator());
         }
     }
 
-    public static boolean areSameNames(String first, String second) {
-        first = remove(first);
-        second = remove(second);
-        return first.equals(second) || first.contains(second) || second.contains(first);
-    }
+    @SuppressLint("Range")
+    private static Contact getContactFromCursor(Cursor cursor) {
+        String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+        String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+        String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 
-    public static String remove(String name) {
-        int startIndex = name.indexOf("/");
-        if (startIndex == -1) {
-            return name;
-        }
-        String toBeReplaced = name.substring(startIndex);
-        return name.replace(toBeReplaced, "");
-    }
+        StringBuilder account = new StringBuilder(cursor.getString(cursor.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_NAME)));
+        String accountType = cursor.getString(cursor.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_TYPE));
+        account.append(" (").append(accountType).append(')');
 
-    public static void deleteContact(String lookupKey) {
-        try {
-            Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
-            contentResolver.delete(uri, null, null);
-        } catch (Exception e) {
-            e.printStackTrace();
+        Set<ContactDetail> phones = new HashSet<>();
+        if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
+            getPhones(id, phones);
         }
+        Set<ContactDetail> addresses = getAddresses(id);
+
+        return new Contact(id, lookupKey, name, account.toString(), phones, addresses);
     }
 
     @SuppressLint("Range")
-    private static void getPhones(String id, List<ContactDetail> phones) {
+    public static Contact getContactById(String id) {
+        Contact contact = null;
+        String selection = ContactsContract.Contacts._ID + " =" + id;
+        try (Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
+                null, selection, null, null)) {
+            if (cursor.moveToFirst()) {
+                contact = getContactFromCursor(cursor);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return contact;
+    }
+
+    @SuppressLint("Range")
+    private static void getPhones(String id, Set<ContactDetail> phones) {
         try (Cursor cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null)) {
             while (cursor.moveToNext()) {
@@ -84,8 +80,8 @@ public class ContactManager {
     }
 
     @SuppressLint("Range")
-    private static List<ContactDetail> getAddresses(String id) {
-        List<ContactDetail> addresses = new ArrayList<>();
+    private static Set<ContactDetail> getAddresses(String id) {
+        Set<ContactDetail> addresses = new HashSet<>();
         try (Cursor cursor = contentResolver.query(
                 ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI, null,
                 ContactsContract.CommonDataKinds.StructuredPostal.CONTACT_ID + " = "
@@ -104,31 +100,28 @@ public class ContactManager {
         return phone.replaceAll("[()\\- ]", "");
     }
 
-    private String checkPhones(String nums) {
-        nums = nums.replaceFirst("\n", "");
-        String[] phones = nums.split("\n");
-        Set<String> set = new HashSet<>(Arrays.asList(phones));
-        if (set.size() != phones.length) {
-            nums += "\nsame";
-        }
-        return "\n" + nums;
+    @SuppressLint("Range")
+    public static void deleteContact(Contact contact) {
+        Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, contact.getLookupKey());
+        contentResolver.delete(uri, null, null);
     }
 
+/*
     //make in new thread
     private void insertContact(String name) {
         ArrayList<ContentProviderOperation> op = new ArrayList<>();
-        /* Добавляем пустой контакт */
+        *//* Добавляем пустой контакт *//*
         op.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
                 .build());
-        /* Добавляем данные имени */
+        *//* Добавляем данные имени *//*
         op.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
                 .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
                 .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
                 .build());
-        /* Добавляем данные телефона */
+        *//* Добавляем данные телефона *//*
         op.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
                 .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
@@ -146,5 +139,41 @@ public class ContactManager {
         } catch (Exception e) {
             Log.e("Exception: ", e.getMessage());
         }
+    }*/
+
+    /*
+    @SuppressLint("Range")
+    private static String getRawContactId(String contactId) {
+        String[] projection = new String[]{ContactsContract.RawContacts._ID};
+        String selection = ContactsContract.RawContacts.CONTACT_ID + "=?";
+        String[] selectionArgs = new String[]{contactId};
+        Cursor c = contentResolver.query(ContactsContract.RawContacts.CONTENT_URI, projection, selection, selectionArgs, null);
+        if (c == null) return null;
+        int rawContactId = -1;
+        if (c.moveToFirst()) {
+            rawContactId = c.getInt(c.getColumnIndex(ContactsContract.RawContacts._ID));
+        }
+        c.close();
+        return String.valueOf(rawContactId);
+
     }
+
+    @SuppressLint("Range")
+    public static String getOrganization(String id) {
+        String rawContactId = getRawContactId(id);
+        String name = null;
+        String orgWhere = ContactsContract.Data.RAW_CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?";
+        String[] orgWhereParams = new String[]{rawContactId,
+                ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE};
+        try (Cursor cursor = contentResolver.query(ContactsContract.Data.CONTENT_URI,
+                null, orgWhere, orgWhereParams, null)) {
+            if (cursor.moveToFirst()) {
+                name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Organization.COMPANY));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return name;
+    }*/
+
 }

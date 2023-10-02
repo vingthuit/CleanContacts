@@ -32,11 +32,11 @@ public class ContactDetail {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ContactDetail that = (ContactDetail) o;
-        return type == that.type && detail.equals(that.detail);
+        return detail.equals(that.detail);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, detail);
+        return Objects.hash(detail);
     }
 }

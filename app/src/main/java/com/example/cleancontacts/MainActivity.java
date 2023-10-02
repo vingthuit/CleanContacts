@@ -1,7 +1,6 @@
 package com.example.cleancontacts;
 
-import static com.example.cleancontacts.contacts.ContactManager.getContactList;
-import static com.example.cleancontacts.contacts.ContactManager.setContactList;
+import static com.example.cleancontacts.contacts.ContactManager.loadContactList;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -9,16 +8,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
-import com.example.cleancontacts.contacts.Contact;
 
 import java.util.ArrayList;
 
@@ -65,24 +60,18 @@ public class MainActivity extends AppCompatActivity {
         if (READ_CONTACTS_GRANTED) {
             loadContacts();
         } else {
-            Toast.makeText(this, "Требуется установить разрешения", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "You need permissions to perform this action", Toast.LENGTH_LONG).show();
         }
     }
 
     private void loadContacts() {
         stringContacts.clear();
-        setContactList(getContentResolver());
-        ArrayList<Contact> contacts = getContactList();
-        contacts.forEach(c -> stringContacts.add(c.toString()));
-        // создаем адаптер
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stringContacts);
-        ListView contactList = findViewById(R.id.contact_list);
-        // устанавливаем для списка адаптер
-        contactList.setAdapter(adapter);
+        loadContactList(getContentResolver());
     }
 
     public void onFind(View view) {
         Intent intent = new Intent(MainActivity.this, FindSame.class);
+        loadContacts();
         startActivity(intent);
     }
 }

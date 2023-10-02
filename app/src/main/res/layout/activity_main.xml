@@ -2,8 +2,21 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="358dp"
+        android:layout_height="289dp"
+        android:gravity="center"
+        android:text="@string/description"
+        android:textColor="#FF000000"
+        android:textSize="18sp"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="36dp"
+        tools:layout_editor_absoluteY="20dp" />
 
     <Button
         android:id="@+id/find_button"
@@ -11,28 +24,8 @@
         android:layout_height="wrap_content"
         android:onClick="onFind"
         android:text="@string/find_button"
-        app:layout_constraintBottom_toTopOf="@id/header"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/header"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/contacts"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@id/contact_list"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/find_button" />
-
-    <ListView
-        android:id="@+id/contact_list"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header" />
+        app:layout_constraintTop_toBottomOf="@+id/description"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="161dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
